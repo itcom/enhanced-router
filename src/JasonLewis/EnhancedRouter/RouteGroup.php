@@ -1,6 +1,6 @@
 <?php namespace JasonLewis\EnhancedRouter;
 
-use Symfony\Component\Routing\RouteCollection;
+use Illuminate\Routing\RouteCollection;
 
 class RouteGroup {
 
@@ -125,7 +125,7 @@ class RouteGroup {
 	 */
 	public function getRoutes()
 	{
-		return $this->routes->all();
+		return $this->routes->getRoutes();
 	}
 
 	/**

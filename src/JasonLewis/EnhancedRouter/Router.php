@@ -1,8 +1,8 @@
 <?php namespace JasonLewis\EnhancedRouter;
 
 use Closure;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\RouteCollection;
+use Illuminate\Http\Request;
+use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\Router as IlluminateRouter;
 
 class Router extends IlluminateRouter {
@@ -97,7 +97,7 @@ class Router extends IlluminateRouter {
 	 */
 	protected function mergeRouteGroups()
 	{
-		$routes = $this->routes->all();
+		$routes = $this->routes->getRoutes();
 
 		foreach ($this->routeGroups as $key => $group)
 		{
@@ -130,7 +130,7 @@ class Router extends IlluminateRouter {
 
 		foreach ($routes as $name => $route)
 		{
-			$this->routes->add($name, $route);
+			$this->routes->add($route);
 		}
 
 		$this->routeGroups = array();
@@ -161,9 +161,11 @@ class Router extends IlluminateRouter {
 	 * @param  string  $path
 	 * @return array
 	 */
-	public function findPatternFilters($method, $path)
+	public function findPatternFilters($request)
 	{
-		$filters = parent::findPatternFilters($method, $path);
+		list($path, $method) = array($request->path(), $request->getMethod());
+
+		$filters = parent::findPatternFilters($request);
 
 		foreach ($this->httpVerbFilters as $verb => $values)
 		{
