@@ -9,21 +9,21 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Array of route groups.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $routeGroups = array();
 
 	/**
 	 * The HTTP verb to filter bindings.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $httpVerbFilters = array();
 
 	/**
 	 * Tie a registered middleware to an HTTP verb or verbs.
-	 * 
+	 *
 	 * @param  string|array  $verbs
 	 * @param  string|array  $names
 	 * @return void
@@ -41,7 +41,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * An alias of the group method but without the attributes.
-	 * 
+	 *
 	 * @param  Closure  $callback
 	 * @return \JasonLewis\EnhancedRouter\RouteGroup
 	 */
@@ -54,7 +54,7 @@ class Router extends IlluminateRouter {
 	 * Create a route group with shared attributes. Overloading this method allows
 	 * developers to chain requirements and filters to all routes within the
 	 * group.
-	 * 
+	 *
 	 * @param  array  $attributes
 	 * @param  Closure  $callback
 	 * @return \JasonLewis\EnhancedRouter\RouteGroup
@@ -71,7 +71,7 @@ class Router extends IlluminateRouter {
 		// We can now get the routes that were added in this group by comparing the
 		// keys of the original routes and of the routes we have after the group
 		// callback was fired.
-		$routes = array_diff_key($this->routes->all(), $original->all());
+		$routes = array_diff_key($this->routes->getRoutes(), $original->getRoutes());
 
 		// With a brand new route collection we'll spin through all of the routes
 		// defined within our group and add them to the collection.
@@ -79,7 +79,7 @@ class Router extends IlluminateRouter {
 
 		foreach ($routes as $key => $route)
 		{
-			$collection->add($key, $route);
+			$collection->add($route);
 		}
 
 		// Reset the routes on the router to the original collection of routes that
@@ -92,7 +92,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Merge route groups into the core route collection.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function mergeRouteGroups()
@@ -138,25 +138,25 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Merge a groups filters onto a route.
-	 * 
+	 *
 	 * @param  \Illuminate\Routing\Route  $route
 	 * @param  \JasonLewis\EnhancedRouter\RouteGroup  $group
 	 * @return void
 	 */
 	protected function mergeGroupFilters($route, $group)
 	{
-		$before = array_unique(array_merge($route->getBeforeFilters(), $group->getBeforeFilters()));
+		$before = array_unique(array_merge($route->beforeFilters(), $group->getBeforeFilters()));
 
-		$route->setOption('_before', $before);
+		$route->before($before);
 
-		$after = array_unique(array_merge($route->getAfterFilters(), $group->getAfterFilters()));
+		$after = array_unique(array_merge($route->afterFilters(), $group->getAfterFilters()));
 
-		$route->setOption('_after', $after);
+		$route->after($after);
 	}
 
 	/**
 	 * Find the patterned filters matching a request.
-	 * 
+	 *
 	 * @param  string  $method
 	 * @param  string  $path
 	 * @return array
@@ -181,7 +181,7 @@ class Router extends IlluminateRouter {
 	/**
 	 * Get the response for a given request.
 	 * Overloaded so that we can merge route groups.
-	 * 
+	 *
 	 * @param  \Symfony\Component\HttpFoundation\Request  $request
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
@@ -195,7 +195,7 @@ class Router extends IlluminateRouter {
 	/**
 	 * Get the route collection instance.
 	 * Overloaded so that we can merge route groups.
-	 * 
+	 *
 	 * @return \Symfony\Component\Routing\RouteCollection
 	 */
 	public function getRoutes()
@@ -207,7 +207,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the array of route groups.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getRouteGroups()
